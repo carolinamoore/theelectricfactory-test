@@ -1,0 +1,285 @@
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+
+<script type="text/javascript">
+
+function dibujarTabla(){
+for (i = 1; i < 10; i++) {
+if (i % 3 == 1) {document.write('<tr>');}
+document.write('<td><input style="border:1px solid white;background-color:#0cbe82;color:white;" type="button" name="' + i + '" value="    " class="cube" onClick="change(this.form,this)"></td>');
+if (i % 3 == 0) {document.write('</tr>');}
+}
+}
+
+
+timerID = x = y = z = auto = 0;
+who = 'Player 1';
+
+function initiate(){
+	clearTimeout(timerID);
+	cell = new Array(0,0,0,0,0,0,0,0,0,0);
+	att = new Array(); strat = def = empty = att;
+	turn = bill = 1; wins = turns = 0;
+	document.forms[0].player1.value = x;
+	document.forms[0].player2.value = y;
+	document.forms[0].remittance.value = z;
+	if (who != 'Start') {
+	for (i in cell) {
+			cell[i] = 0; if (i > 0) {document.forms[0].elements[i].value = ''};
+			}
+	}
+	document.forms[0].turnss.value = who;
+}
+
+function set() {
+    clearTimeout(timerID);
+    if (att[0] > 0) {
+		battle = att[Math.floor(Math.random() * 10) % att.length]
+    } else if (def[0] > 0) {
+		battle = def[Math.floor(Math.random() * 10) % def.length];
+    } else if (strat[0] > 0) {
+		battle = strat[Math.floor(Math.random() * 10) % strat.length];
+    } else {
+		battle = empty[Math.floor(Math.random() * 10) % empty.length];
+    }
+
+    if (turn == 0 && battle > 0) {document.forms[0].elements[battle].click()};
+}
+
+
+function win() {
+  if (	cell[1] + cell[2] + cell[3] == 3 ||
+	cell[4] + cell[5] + cell[6] == 3 ||
+	cell[7] + cell[8] + cell[9] == 3 ||
+	cell[1] + cell[4] + cell[7] == 3 ||
+	cell[2] + cell[5] + cell[8] == 3 ||
+	cell[3] + cell[6] + cell[9] == 3 ||
+	cell[1] + cell[5] + cell[9] == 3 ||
+	cell[3] + cell[5] + cell[7] == 3 
+     ) {
+	
+	if (confirm("Gana el jugador 1!!\nJugar otra vez?")) 
+	{
+	wins = 1;
+	x++; who = 'Jugador 1'; timerID = setTimeout('initiate()',800)
+	} else {
+	x++; who = 'Start'; timerID = setTimeout('initiate()',800)
+	};
+    }  
+  if (	cell[1] + cell[2] + cell[3] == 30 ||
+	cell[4] + cell[5] + cell[6] == 30 ||
+	cell[7] + cell[8] + cell[9] == 30 ||
+	cell[1] + cell[4] + cell[7] == 30 ||
+	cell[2] + cell[5] + cell[8] == 30 ||
+	cell[3] + cell[6] + cell[9] == 30 ||
+	cell[1] + cell[5] + cell[9] == 30 ||
+	cell[3] + cell[5] + cell[7] == 30
+     ) {
+	if (confirm(((auto == 1) ? ('Has perdido!!') : ('Gana el jugador 2!!')) + "\nJugar otra vez?")) {
+	y++; who = 'Jugador 1'; timerID = setTimeout('initiate()',800)
+	} else {
+	y++; who = 'Start'; timerID = setTimeout('initiate()',800)	
+	};
+   } 
+}
+
+function exchange(turn){
+  if (bill == 1)  {
+    if (turn == 0) {
+        turn = 1;
+        who = "Jugador " + 1
+    }
+    else {
+        if (auto == 0) {turn = 0;
+	who = "Jugador " + 2} else {turn = 0; who = "Ordenador";}
+    }
+      if (turns == 9
+     ) {
+	if (confirm("Empate!!!\n\nJugar otra vez?")) {
+	z++; who = 'Jugador 1'; timerID = setTimeout('initiate()',800)} else
+	{z++; who = 'Start'; timerID = setTimeout('initiate()',800)};
+      }
+
+  }
+  else {
+    turn = turn;
+  }
+  bill = 1;
+  return(turn);
+}
+
+function modification(click) {
+
+place = cell[click]; clicked = click;
+
+if (place == 0){
+   if (turn == 0){
+	xo = "O";
+	place = 10;
+   } else {
+	xo = "X";
+	place = 1;
+   }
+cell[click] = place; turns++;
+}
+else {
+   if (place == 10){
+       xo = "O";}
+   if (place == 1){
+       xo = "X";}
+   bill = 0
+}
+return(xo);
+}
+
+function defend() {empty = new Array(); def = new Array();
+for (i = 1; i < 10; i++) { old = cell[i]; cell[i] = 1;
+  if ( (cell[1] + cell[2] + cell[3] == 3 ||
+	cell[4] + cell[5] + cell[6] == 3 ||
+        cell[7] + cell[8] + cell[9] == 3 ||
+        cell[1] + cell[4] + cell[7] == 3 ||
+        cell[2] + cell[5] + cell[8] == 3 ||
+        cell[3] + cell[6] + cell[9] == 3 ||
+        cell[1] + cell[5] + cell[9] == 3 ||
+        cell[3] + cell[5] + cell[7] == 3) && old == 0
+     ) { def[def.length] = i}
+   cell[i] = old; 
+   if (cell[i] == 0) {
+   if (turns != 1) {empty[empty.length] = i} else 
+   if (cell[5] == 0) {empty[0] = 5; empty[1] = 10 - clicked} else 
+   if (i % 2 != 0) {empty[empty.length] = i}
+   };
+}
+}
+
+function attack() {att = new Array();
+for (i = 1; i < 10; i++) { old = cell[i]; cell[i] = 10;
+  if ( (cell[1] + cell[2] + cell[3] == 30 ||
+	cell[4] + cell[5] + cell[6] == 30 ||
+        cell[7] + cell[8] + cell[9] == 30 ||
+        cell[1] + cell[4] + cell[7] == 30 ||
+        cell[2] + cell[5] + cell[8] == 30 ||
+        cell[3] + cell[6] + cell[9] == 30 ||
+        cell[1] + cell[5] + cell[9] == 30 ||
+        cell[3] + cell[5] + cell[7] == 30) && old == 0
+     ) { att[att.length] = i}
+cell[i] = old;
+}
+}
+
+function strategy() {
+strat = new Array();
+for (i = 1; i < 10; i++) { 
+		old = cell[i]; cell[i] = 10;
+  	if ( (cell[1] + cell[2] + cell[3] == 20 ||
+			  cell[4] + cell[5] + cell[6] == 20 ||
+        cell[7] + cell[8] + cell[9] == 20 ||
+        cell[1] + cell[4] + cell[7] == 20 ||
+        cell[2] + cell[5] + cell[8] == 20 ||
+        cell[3] + cell[6] + cell[9] == 20 ||
+        cell[1] + cell[5] + cell[9] == 20 ||
+        cell[3] + cell[5] + cell[7] == 20) && old == 0
+    ) { 
+     	 if (turns != 3) {strat[strat.length] = i} else if (i % 2 != 0) {strat[strat.length] = i}
+     	 }
+		cell[i] = old;
+		}
+}
+
+function change(form,element){
+    modification(element.name);
+    element.value = xo;
+    turn = exchange(turn);
+    form.turnss.value = who;
+    defend(); attack(); strategy(); win(); 
+    if (auto == 0 || wins == 1) {return} else {
+    timerID = setTimeout('set()',600)
+    }
+}
+
+initiate();
+
+</script>
+
+<style>
+
+
+ 
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 70%;
+	font-weight: 400;
+	color: #333333;
+	margin: 0px;
+	background-repeat: repeat-x;
+	background-position: top;
+	background-color: #F8F8F8;
+	padding: 0px;
+}
+
+
+
+
+
+table.tablaFina{
+	padding:2px; 
+	border: 1px solid #aaaaaa;
+	border-collapse: collapse;
+	text-align:left;
+}
+
+table.tablaFina td{
+	padding: 2px 2px 2px 2px; 
+	border: 1px solid #aaaaaa;
+	border-collapse: collapse;
+}
+
+td.alignCenter{text-align:center;}
+td.alignRight{text-align:right;}
+
+.cube{height:150px;width:150px;font-size:16pt;font-weight:900;font-family:'Comic Sans MS';Text-Align:Center;}
+   .switch{width:450px;margin-top:50px;background-color:#0cbe82;color:white;border:0px;}
+
+</style>
+
+
+<body>
+
+<form>
+<center><div style="width:1050px;height:100%;">
+<div style="width:500px;float:left;text-align:center;margin-left:50px">
+
+<input type="button" title="Haz click aquí para jugar otra vez." name="turnss" width="500" class="switch" value="Jugador 1" onClick="who = 'Jugador 1'; initiate()">
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 style="margin:auto;height:450px;width:450px">
+<caption><script language="JavaScript" type="text/javascript">dibujarTabla();</script></caption>
+<tr>
+<td></td>
+</tr>
+</table>
+</div>
+<div style="width:300px;float:left;text-align:center;margin-left:100px;">
+
+<table border=0 cellspacing=0 cellpadding=4 style="margin:auto;width:300px;height:200px;margin-top:50px;">
+<tr style="background-color:#0cbe82;color:white;">
+<td style="text-align:center;width:65px;">Jugador 1</td>
+<td style="text-align:center;width:65px;">Jugador 2</td>
+<td style="text-align:center;width:65px;">Empates</td>
+</tr>
+<tr bgcolor="#f8f8f8">
+<td ALIGN=CENTER>
+<input style="background-color:transparent;border:solid 0px;text-align:center;color:gray;" type="Text" size="3" ReadOnly title="Jugador 1" name="player1" value="0"></td>
+<td ALIGN=CENTER>
+<input style="background-color:transparent;border:solid 0px;Text-Align:Center;color:gray;" type="Text" size="3" ReadOnly title="Jugador 2" name="player2" value="0"></td>
+<td ALIGN=CENTER>
+<input style="background-color:transparent;border:solid 0px;Text-Align:Center;color:gray;" type="Text" size="3" ReadOnly title="Remittance" name="remittance" value="0"></td>
+</tr>
+</table>
+<p><input type="checkbox" title="Haz click aquí para jugar con otra persona o contra la máquina." style="margin-top:30px;" name="automat" value="2 jugadores" id="automatt" onClick="if (this.value == 'Ordenador') {this.value = '2 jugadores'; auto = 0} else {this.value = 'Ordenador'; auto = 1}; who = 'Jugador 1'; initiate();"><label for="automatt">Contra la máquina</label></p>
+</div>
+</div></center>
+</form>
+
+</body>
+</html>
